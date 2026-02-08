@@ -3,44 +3,56 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#1D4ED8">
+    
+    <!-- Apple Mobile Web App Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="HawkerPulse">
+    
     <title>HawkerPulse - 食光脉搏</title>
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3443/3443338.png">
+    
     <script src="https://cdn.tailwindcss.com"></script>
-<script type="importmap">
-{
-  "imports": {
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-    "react/": "https://esm.sh/react@^19.2.4/",
-    "react": "https://esm.sh/react@^19.2.4"
-  }
-}
-</script>
+    <script type="importmap">
+    {
+      "imports": {
+        "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+        "react/": "https://esm.sh/react@^19.2.4/",
+        "react": "https://esm.sh/react@^19.2.4"
+      }
+    }
+    </script>
+    <style>
+        /* 适配刘海屏 */
+        body {
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+    </style>
 </head>
 <body class="bg-gray-50 overflow-x-hidden">
     <div id="root"></div>
     <script>
-        // Service Worker 注册优化
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                try {
-                    // 使用 URL 构造函数基于当前页面 location 强制生成同源路径
-                    // 这能防止浏览器在沙箱预览时将相对路径解析到父域
-                    const swUrl = new URL('sw.js', window.location.href).href;
-                    
-                    navigator.serviceWorker.register(swUrl)
-                        .then(reg => console.log('Service Worker 注册成功:', reg.scope))
-                        .catch(err => {
-                            // 在某些极其严格的 iframe 沙箱中（无 allow-same-origin），SW 仍可能被拦截
-                            console.warn('Service Worker 注册受限或失败（环境安全策略）：', err.message);
-                        });
-                } catch (e) {
-                    console.error('Service Worker 路径解析错误:', e);
-                }
+                // 部署到 Netlify 后，直接使用根路径注册
+                navigator.serviceWorker.register('/sw.js', { scope: '/' })
+                    .then(reg => {
+                        console.log('HawkerPulse SW 已激活:', reg.scope);
+                        // 检查更新
+                        reg.onupdatefound = () => {
+                            const installingWorker = reg.installing;
+                            installingWorker.onstatechange = () => {
+                                if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    console.log('新版本已就绪，请刷新页面');
+                                }
+                            };
+                        };
+                    })
+                    .catch(err => console.error('PWA 注册失败:', err));
             });
         }
     </script>

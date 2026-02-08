@@ -1,0 +1,5 @@
+{
+  "name": "Copy of 食光脉搏 (HawkerPulse)",
+  "description": "A dashboard-style mobile application prototype for NTU Koufu canteen to visualize queue times, congestion heatmaps, and provide speed-based stall recommendations.",
+  "requestFramePermissions": []
+}

@@ -12,6 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="HawkerPulse">
     
     <title>HawkerPulse - 食光脉搏</title>
+    <!-- 确保路径指向根目录下的 manifest.json -->
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3443/3443338.png">
     
@@ -31,18 +32,23 @@
             padding-top: env(safe-area-inset-top);
             padding-bottom: env(safe-area-inset-bottom);
         }
+        #root {
+            min-height: 100vh;
+        }
     </style>
 </head>
 <body class="bg-gray-50 overflow-x-hidden">
     <div id="root"></div>
+    
+    <!-- 关键修复：显式引入入口模块 -->
+    <script type="module" src="./index.tsx"></script>
+
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                // 部署到 Netlify 后，直接使用根路径注册
                 navigator.serviceWorker.register('/sw.js', { scope: '/' })
                     .then(reg => {
                         console.log('HawkerPulse SW 已激活:', reg.scope);
-                        // 检查更新
                         reg.onupdatefound = () => {
                             const installingWorker = reg.installing;
                             installingWorker.onstatechange = () => {
